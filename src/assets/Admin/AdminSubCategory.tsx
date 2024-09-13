@@ -24,7 +24,7 @@ const AdminSubCategory: React.FC = () => {
  
   const categoryOptions = ["South Indian", "North Indian"];
  
-  const handleAddCategory = () => {
+  const handleAddSubCategory = () => {
     if (subCategoryInput.trim() === "") {
       message.warning("Please enter a subCategory");
       return;
@@ -156,7 +156,7 @@ const AdminSubCategory: React.FC = () => {
       </div>
  
       {/* Add Category Modal */}
-      <Modal title="Add Sub-Category" open={isModalOpen} onOk={handleAddCategory} onCancel={handleCancel}>
+      <Modal title="Add Sub-Category" open={isModalOpen} onOk={handleAddSubCategory} onCancel={handleCancel}>
         <div>Category: </div>
         <Select placeholder="Select a Category" style={{ width: "100%", marginTop: "10px" }} value={selectedCategory} onChange={handleCategoryChange}>
           {categoryOptions.map((category) => (

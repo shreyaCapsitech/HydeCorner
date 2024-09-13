@@ -12,6 +12,8 @@ interface DataType {
   category: string;
   subCategory: string;
   item: string;
+  price: string;
+  desc: string;
 }
  
 const AdminItems: React.FC = () => {
@@ -21,13 +23,15 @@ const AdminItems: React.FC = () => {
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>("");
   const [itemInput, setItemInput] = useState("");
   const [item, setItem] = useState<DataType[]>([]);
+  const [priceInput, setPriceInput] = useState<string>("");
+  const [descInput, setDescInput] = useState<string>("");
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
  
   const categoryOptions = ["South Indian", "North Indian"];
   const subCategoryOptions = ["Dosa", "Chole"];
  
-  const handleAddCategory = () => {
+  const handleAddItem = () => {
     if (itemInput.trim() === "") {
       message.warning("Please enter an Item");
       return;
@@ -37,13 +41,26 @@ const AdminItems: React.FC = () => {
       message.warning("Please enter an Image Url");
       return;
     }
- 
+
+    
+    if (priceInput.trim() === "") {
+      message.warning("Please enter a Price");
+      return;
+    }
+
+    if (descInput.trim() === "") {
+      message.warning("Please enter a Description");
+      return;
+    }
+    
     const newItem: DataType = {
       key: (item.length + 1).toString(),
       imageUrl: imageUrlInput,
       category: selectedCategory,
       subCategory: selectedSubCategory,
       item: itemInput,
+      price: priceInput,
+      desc: descInput,
     };
  
     setImageUrlInput("");
@@ -51,6 +68,8 @@ const AdminItems: React.FC = () => {
     setSelectedSubCategory("");
     setItem([...item, newItem]);
     setItemInput("");
+    setPriceInput("");
+    setDescInput("");
     setIsModalOpen(false);
     message.success("Item added successfully!");
   };
@@ -67,6 +86,8 @@ const AdminItems: React.FC = () => {
     setSelectedCategory(record.category);
     setSelectedCategory(record.subCategory);
     setItemInput(record.item);
+    setPriceInput(record.price);
+    setDescInput(record.desc);
   };
  
   const handleEditOk = () => {
@@ -74,7 +95,7 @@ const AdminItems: React.FC = () => {
     setItem((prev) =>
       prev.map((item) =>
         item.key === editRecord.key
-          ? { ...item, imageUrl: imageUrlInput, category: selectedCategory, subCategory: selectedSubCategory, item: itemInput }
+          ? { ...item, imageUrl: imageUrlInput, category: selectedCategory, subCategory: selectedSubCategory, item: itemInput, price: priceInput, desc: descInput }
           : item
       )
     );
@@ -83,6 +104,8 @@ const AdminItems: React.FC = () => {
     setSelectedCategory("");
     setSelectedSubCategory("");
     setItemInput("");
+    setPriceInput("");
+    setDescInput("");
     message.success("Item updated successfully!");
   };
  
@@ -100,6 +123,8 @@ const AdminItems: React.FC = () => {
     setSelectedCategory("");
     setSelectedSubCategory("");
     setItemInput("");
+    setPriceInput("");
+    setDescInput("");
   };
  
   const showModal = () => {
@@ -139,6 +164,16 @@ const AdminItems: React.FC = () => {
       key: "item",
     },
     {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
+      title: "Description",
+      dataIndex: "desc",
+      key: "desc",
+    },
+    {
       title: "Action",
       key: "action",
       render: (_, record) => (
@@ -173,7 +208,7 @@ const AdminItems: React.FC = () => {
       </div>
  
       {/* Add Category Modal */}
-      <Modal title="Add Item" open={isModalOpen} onOk={handleAddCategory} onCancel={handleCancel}>
+      <Modal title="Add Item" open={isModalOpen} onOk={handleAddItem} onCancel={handleCancel}>
         <div>Category: </div>
         <Select placeholder="Select a Category" style={{ width: "100%", marginTop: "10px" }} value={selectedCategory} onChange={handleCategoryChange}>
           {categoryOptions.map((category) => (
@@ -192,6 +227,10 @@ const AdminItems: React.FC = () => {
         </Select>
         <div style={{ marginTop: 10 }}>Item: </div>
         <Input placeholder="Enter Item" style={{ marginTop: 10 }} value={itemInput} onChange={(e) => setItemInput(e.target.value)} />
+        <div style={{ marginTop: 10 }}>Price: </div>
+        <Input placeholder="Enter Price" style={{ marginTop: 10 }} value={priceInput} onChange={(e) => setPriceInput(e.target.value)} />
+        <div style={{ marginTop: 10 }}>Description: </div>
+        <Input.TextArea rows={4} placeholder="Enter Description" value={descInput} style={{ marginTop: "10px" }} onChange={(e) => setDescInput(e.target.value)} />
         <div style={{ marginTop: "10px" }}>Image URL:</div>
         <Input placeholder="Enter image URL" value={imageUrlInput} style={{ marginTop: "10px" }} onChange={(e) => setImageUrlInput(e.target.value)} />
       </Modal>
@@ -216,6 +255,10 @@ const AdminItems: React.FC = () => {
         </Select>
         <div style={{ marginTop: 10 }}>Item: </div>
         <Input placeholder="Edit Item" value={itemInput} style={{ marginTop: 10 }} onChange={(e) => setItemInput(e.target.value)} />
+        <div style={{ marginTop: 10 }}>Price: </div>
+        <Input placeholder="Edit Price" value={priceInput} style={{ marginTop: 10 }} onChange={(e) => setPriceInput(e.target.value)} />
+        <div style={{ marginTop: 10 }}>Description: </div>
+        <Input.TextArea rows={4} placeholder="Edit Description" value={descInput} style={{ marginTop: "10px" }} onChange={(e) => setDescInput(e.target.value)} />
         <div style={{ marginTop: "10px" }}>Image URL:</div>
         <Input placeholder="Edit image URL" value={imageUrlInput} style={{ marginTop: "10px" }} onChange={(e) => setImageUrlInput(e.target.value)} />
       </Modal>

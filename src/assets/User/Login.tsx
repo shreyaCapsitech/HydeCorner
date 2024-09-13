@@ -2,39 +2,35 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card } from 'antd';
-import { useGetLogins } from '../../HandleApi/LoginApi';
+import { useAuthenticateLogin } from '../../HandleApi/Api';
 
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { data: logins, isLoading, error } = useGetLogins();
+  const { mutate: authenticateLogin, error } = useAuthenticateLogin();
   const navigate = useNavigate();
 
   const onFinish = () => {
-    // Ensure logins are loaded
-    if (!logins) return;
- 
-    // Check credentials
-    const foundLogin = logins.find(
-      (login: any) => login.username === username && login.password === password
-    );
- 
-    if (foundLogin) {
-      // Navigate based on user role
-      if (foundLogin.usertype === 'Admin') {
-        navigate('/admin');
-      } else {
-        navigate('/user');
+    authenticateLogin(
+      { username, password },
+      {
+        onSuccess: (data) => {
+          // Assuming 'data' contains the user role
+          if (data.role === 'Admin') {
+            navigate('/admin');
+          } else {
+            navigate('/user');
+          }
+        },
+        onError: () => {
+          alert('Invalid username or password');
+        }
       }
-    } else {
-      // Optionally handle incorrect credentials
-      alert('Invalid username or password');
-    }
+    );
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching logins!</p>;
+  if (error) return <p>Error authenticating user!</p>;
 
   return (
     <div style={{
