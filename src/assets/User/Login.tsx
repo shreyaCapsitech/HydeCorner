@@ -1,13 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Card } from 'antd';
+import { useGetLogins } from '../../HandleApi/LoginApi';
+
 
 const Login: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log('Received values of form: ', values);
-  };
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { data: logins, isLoading, error } = useGetLogins();
   const navigate = useNavigate();
+
+  const onFinish = () => {
+    // Ensure logins are loaded
+    if (!logins) return;
+ 
+    // Check credentials
+    const foundLogin = logins.find(
+      (login: any) => login.username === username && login.password === password
+    );
+ 
+    if (foundLogin) {
+      // Navigate based on user role
+      if (foundLogin.usertype === 'Admin') {
+        navigate('/admin');
+      } else {
+        navigate('/user');
+      }
+    } else {
+      // Optionally handle incorrect credentials
+      alert('Invalid username or password');
+    }
+  };
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching logins!</p>;
+
   return (
     <div style={{
       display: 'flex',
@@ -27,13 +55,13 @@ const Login: React.FC = () => {
             name="username"
             rules={[{ required: true, message: 'Please input your Username!' }]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Username" />
+            <Input prefix={<UserOutlined />} placeholder="Username" onChange={(e) => {setUsername(e.target.value)}} />
           </Form.Item>
           <Form.Item
             name="password"
             rules={[{ required: true, message: 'Please input your Password!' }]}
           >
-            <Input prefix={<LockOutlined />} type="password" placeholder="Password" />
+            <Input prefix={<LockOutlined />} type="password" placeholder="Password" onChange={(e) => {setPassword(e.target.value)}} />
           </Form.Item>
           <Form.Item>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -44,7 +72,7 @@ const Login: React.FC = () => {
             </div>
           </Form.Item>
           <Form.Item>
-            <Button block type="primary" htmlType="submit" onClick={() => {navigate("/admin")}}>
+            <Button block type="primary" htmlType="submit">
               Log in
             </Button>
           </Form.Item>

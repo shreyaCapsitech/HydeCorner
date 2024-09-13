@@ -57,13 +57,13 @@ imageUrl: "https://hips.hearstapps.com/hmg-prod/images/oreo-desserts-oreo-pie-64
   return (
           <div
             style={{
-              padding: 24,
-              display: "flex",
-              justifyContent: "center",
-              gap: "50px",
+              padding: 8,
               minHeight: 720,
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center", // Centers the content horizontally
             }}
           >
             <div>
@@ -76,6 +76,15 @@ imageUrl: "https://hips.hearstapps.com/hmg-prod/images/oreo-desserts-oreo-pie-64
               style={{margin: "8px", width: "500px"}}
             />
           </div>
+          <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        gap: "50px",
+        flexWrap: "wrap", // Ensures cards wrap on smaller screens
+        marginTop: "40px", // Adds spacing between the search and cards
+      }}
+    >
             {filteredItems.length > 0 ? (
             filteredItems.map((item, index) => (
               <Card
@@ -91,6 +100,7 @@ imageUrl: "https://hips.hearstapps.com/hmg-prod/images/oreo-desserts-oreo-pie-64
           ) : (
             <p>No items found.</p>
           )}       
+          </div>
           </div>
  
   );

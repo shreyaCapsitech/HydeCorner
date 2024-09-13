@@ -28,8 +28,13 @@ const AdminItems: React.FC = () => {
   const subCategoryOptions = ["Dosa", "Chole"];
  
   const handleAddCategory = () => {
-    if (itemInput.trim() === "" || imageUrlInput.trim() === "") {
-      message.warning("Please enter a subCategory");
+    if (itemInput.trim() === "") {
+      message.warning("Please enter an Item");
+      return;
+    }
+
+    if (imageUrlInput.trim() === "") {
+      message.warning("Please enter an Image Url");
       return;
     }
  
@@ -47,7 +52,7 @@ const AdminItems: React.FC = () => {
     setItem([...item, newItem]);
     setItemInput("");
     setIsModalOpen(false);
-    message.success("Category added successfully!");
+    message.success("Item added successfully!");
   };
  
   const handleDelete = (key: string) => {

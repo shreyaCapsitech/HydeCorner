@@ -25,8 +25,13 @@ const AdminSubCategory: React.FC = () => {
   const categoryOptions = ["South Indian", "North Indian"];
  
   const handleAddCategory = () => {
-    if (subCategoryInput.trim() === "" || imageUrlInput.trim() === "") {
+    if (subCategoryInput.trim() === "") {
       message.warning("Please enter a subCategory");
+      return;
+    }
+
+    if (imageUrlInput.trim() === "") {
+      message.warning("Please enter a Image Url");
       return;
     }
  
@@ -42,12 +47,12 @@ const AdminSubCategory: React.FC = () => {
     setSubCategory([...subCategory, newSubCategory]);
     setSubCategoryInput("");
     setIsModalOpen(false);
-    message.success("Category added successfully!");
+    message.success("Sub Category added successfully!");
   };
  
   const handleDelete = (key: string) => {
     setSubCategory(subCategory.filter((subCategory) => subCategory.key !== key));
-    message.success("Category deleted successfully!");
+    message.success("Sub Category deleted successfully!");
   };
  
   const handleEdit = (record: DataType) => {

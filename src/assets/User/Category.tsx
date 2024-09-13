@@ -48,43 +48,56 @@ imageUrl: "https://5.imimg.com/data5/SELLER/Default/2021/5/GB/XY/RD/130296858/di
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   return (
-          <div
-            style={{
-              padding: 24,
-              display: "flex",
-              justifyContent: "center",
-              gap: "50px",
-              minHeight: 720,
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
-            }}
+    <div
+    style={{
+      padding: 8,
+      minHeight: 720,
+      background: colorBgContainer,
+      borderRadius: borderRadiusLG,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center", // Centers the content horizontally
+    }}
+  >
+    {/* Search Bar */}
+    <div>
+      <Search
+        placeholder="input search text"
+        allowClear
+        enterButton="Search"
+        size="large"
+        onSearch={onSearch}
+        style={{ margin: "8px", width: "500px" }}
+      />
+    </div>
+
+    {/* Cards */}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        gap: "50px",
+        flexWrap: "wrap", // Ensures cards wrap on smaller screens
+        marginTop: "40px", // Adds spacing between the search and cards
+      }}
+    >
+      {filteredItems.length > 0 ? (
+        filteredItems.map((item, index) => (
+          <Card
+            key={index}
+            hoverable
+            style={{ width: 240, height: 400 }}
+            cover={<img style={{ height: "220px" }} alt="example" src={item.imageUrl} />}
+            onClick={() => navigate(item.navigateTo)}
           >
-            <div>
-            <Search
-              placeholder="input search text"
-              allowClear
-              enterButton="Search"
-              size="large"
-              onSearch={onSearch}
-              style={{margin: "8px", width: "500px"}}
-            />
-          </div> 
-            {filteredItems.length > 0 ? (
-            filteredItems.map((item, index) => (
-              <Card
-                key={index}
-                hoverable
-                style={{ width: 240, height: 400 }}
-                cover={<img style={{ height: "220px" }} alt="example" src={item.imageUrl} />}
-                onClick={() => navigate(item.navigateTo)}
-              >
-                <Meta title={item.title} description={item.description} />
-              </Card>
-            ))
-          ) : (
-            <p>No items found.</p>
-          )}       
-          </div>
+            <Meta title={item.title} description={item.description} />
+          </Card>
+        ))
+      ) : (
+        <p>No items found.</p>
+      )}
+    </div>
+  </div>
   );
 };
 export default Category;
