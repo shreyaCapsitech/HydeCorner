@@ -222,14 +222,14 @@ const AdminUserProfile: React.FC = () => {
         enterButton="Search"
         size="large"
       />
-      <Button type="primary" onClick={showModal} style={{ width: "160px" }}>
-        <PlusOutlined /> Add Sub-Category
+      <Button type="primary" onClick={showModal} style={{ width: "140px" }}>
+        <PlusOutlined /> Add User Profile
       </Button>
       <div>
         <Table columns={columns} dataSource={userProfile} rowKey="id" />
       </div>
 
-      {/* Add Sub-Category Modal */}
+      {/* Add User Profile Modal */}
       <Modal
         title="Add User Profile"
 
@@ -294,9 +294,9 @@ const AdminUserProfile: React.FC = () => {
         </Form>
       </Modal>
 
-      {/* Edit Sub-Category Modal */}
+      {/* Edit User Profile Modal */}
       <Modal
-        title="Edit Sub-Category"
+        title="Edit User Profile"
         open={editModalVisible}
         onOk={handleEditOk}
         onCancel={handleEditCancel}
