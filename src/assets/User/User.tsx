@@ -17,9 +17,6 @@ const User: React.FC = () => {
   const menuLabels = [
     "Category",
     "Sub-Category",
-    "Attendee",
-    "Tag",
-    "Table",
     "Order",
     "Items",
   ];
@@ -34,8 +31,8 @@ const User: React.FC = () => {
     switch(selectedMenuItem) {
         case "1": return <Category />;
         case "2": return <SubCategory />;
-        case "6": return <Order />;
-        case "7": return <Items />;
+        case "3": return <Order />;
+        case "4": return <Items />;
     }
   };
  

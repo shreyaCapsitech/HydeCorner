@@ -5,6 +5,7 @@ import { LogoutOutlined } from "@ant-design/icons";
 import AdminCategory from "./AdminCategory";
 import AdminSubCategory from "./AdminSubCategory";
 import AdminItems from "./AdminItems";
+import AdminUserProfile from "./AdminUserProfile";
  
 const { Header, Footer, Sider, Content } = Layout;
  
@@ -21,6 +22,7 @@ const Admin: React.FC = () => {
     "Table",
     "Order",
     "Items",
+    "User Profiles"
   ];
  
   const items = menuLabels.map((label, index) => ({
@@ -34,6 +36,7 @@ const Admin: React.FC = () => {
         case "1": return <AdminCategory />;
         case "2": return <AdminSubCategory />;
         case "7": return <AdminItems />;
+        case "8": return <AdminUserProfile/>
     }
   };
  

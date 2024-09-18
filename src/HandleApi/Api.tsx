@@ -25,7 +25,7 @@ const baseUrl = "https://localhost:7018/api";
 //   });
 // };
  
-// User login function
+
 export const userLogin = async (payload: any) => {
   try {
 const { data } = await axios.post(`${baseUrl}/Login/authenticate`, payload);
@@ -35,7 +35,7 @@ const { data } = await axios.post(`${baseUrl}/Login/authenticate`, payload);
   }
 };
  
-// React Query hook for user login mutation
+
 export const useLogin = () =>
   useMutation({
     mutationFn: userLogin,
@@ -44,79 +44,151 @@ export const useLogin = () =>
     },
   });
 
+// Categories api functions
+
   export const fetchCategories = async () => {
     const response = await axios.get(`${baseUrl}/Category`);
     return response.data;
 };
  
-// Fetch a single category by id
 export const fetchCategoryById = async (id: string) => {
     const response = await axios.get(`${baseUrl}/Category/${id}`);
     return response.data;
 };
  
-// Add a new category
 export const addCategory = async (category: any) => {
 const response = await axios.post(`${baseUrl}/Category`, category);
     return response.data;
 };
  
-// Edit an existing category
 export const editCategory = async (id: string, category: any) => {
     const response = await axios.put(`${baseUrl}/Category/${id}`, category);
     return response.data;
 };
  
-// Delete a category
 export const deleteCategory = async (id: string) => {
     const response = await axios.delete(`${baseUrl}/Category/${id}`);
     return response.data;
 };
 
-// Fetch all categories hook
 export const useCategories = () => {
   return useQuery({queryKey: ["categories"],queryFn: fetchCategories});
 };
 
-// Fetch category by ID hook
 export const useCategory = (id: string) => {
   return useQuery({queryKey: ["category", id],queryFn: () => fetchCategoryById(id), 
       enabled: !!id,  // only run if id is truthy
   });
 };
 
-// Add new category hook
-export const useAddCategory = () => {
-  const queryClient = useQueryClient();
-  return useMutation({mutationFn: addCategory, 
-      onSuccess: () => {
-          // Invalidate and refetch the categories after adding a new one
-          queryClient.invalidateQueries({queryKey: ["categories"]});
-      },
+
+// Subcategory api functions 
+
+export const fetchSubCategories = async () => {
+    const response = await axios.get(`${baseUrl}/SubCategory`);
+    return response.data;
+};
+ 
+export const fetchSubCategoryById = async (id: string) => {
+    const response = await axios.get(`${baseUrl}/SubCategory/${id}`);
+    return response.data;
+};
+ 
+export const addSubCategory = async (subcategory: any) => {
+const response = await axios.post(`${baseUrl}/SubCategory`, subcategory);
+    return response.data;
+};
+ 
+export const editSubCategory = async (id: string, subcategory: any) => {
+    const response = await axios.put(`${baseUrl}/SubCategory/${id}`, subcategory);
+    return response.data;
+};
+ 
+export const deleteSubCategory = async (id: string) => {
+    const response = await axios.delete(`${baseUrl}/SubCategory/${id}`);
+    return response.data;
+};
+
+export const useSubCategories = () => {
+  return useQuery({queryKey: ["subcategories"],queryFn: fetchSubCategories});
+};
+
+export const useSubCategory = (id: string) => {
+  return useQuery({queryKey: ["subcategory", id],queryFn: () => fetchSubCategoryById(id), 
+      enabled: !!id,  // only run if id is truthy
   });
 };
 
-// Edit existing category hook
-export const useEditCategory = (id: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({mutationFn: (category: any) => editCategory(id, category), 
-      onSuccess: () => {
-          // Invalidate and refetch the categories after editing one
-          queryClient.invalidateQueries({queryKey: ["categories"]});
-          queryClient.invalidateQueries({queryKey: ["category", id]});
-      },
-  });
+// Items api functions 
+
+export const fetchItems = async () => {
+  const response = await axios.get(`${baseUrl}/Item`);
+  return response.data;
 };
 
-// Delete category hook
-export const useDeleteCategory = (id: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({mutationFn: () => deleteCategory(id), 
-      onSuccess: () => {
-          // Invalidate and refetch the categories after deleting
-          queryClient.invalidateQueries({queryKey: ["categories"]});
-      },
-  });
+export const fetchItemById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/Item/${id}`);
+  return response.data;
 };
 
+export const addItem = async (item: any) => {
+const response = await axios.post(`${baseUrl}/Item`, item);
+  return response.data;
+};
 
+export const editItem = async (id: string, item: any) => {
+  const response = await axios.put(`${baseUrl}/Item/${id}`, item);
+  return response.data;
+};
+
+export const deleteItem = async (id: string) => {
+  const response = await axios.delete(`${baseUrl}/Item/${id}`);
+  return response.data;
+};
+
+export const useItems = () => {
+return useQuery({queryKey: ["items"],queryFn: fetchItems});
+};
+
+export const useItem = (id: string) => {
+return useQuery({queryKey: ["item", id],queryFn: () => fetchItemById(id), 
+    enabled: !!id,  // only run if id is truthy
+});
+};
+
+// UserProfile api functions
+
+export const fetchUserProfiles = async () => {
+  const response = await axios.get(`${baseUrl}/UserProfile`);
+  return response.data;
+};
+
+export const fetchUserProfileById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/UserProfile/${id}`);
+  return response.data;
+};
+
+export const addUserProfile = async (userProfile: any) => {
+const response = await axios.post(`${baseUrl}/UserProfile`, userProfile);
+  return response.data;
+};
+
+export const editUserProfile = async (id: string, userProfile: any) => {
+  const response = await axios.put(`${baseUrl}/UserProfile/${id}`, userProfile);
+  return response.data;
+};
+
+export const deleteUserProfile = async (id: string) => {
+  const response = await axios.delete(`${baseUrl}/UserProfile/${id}`);
+  return response.data;
+};
+
+export const useUserProfiles = () => {
+return useQuery({queryKey: ["userProfiles"],queryFn: fetchUserProfiles});
+};
+
+export const useUserProfile = (id: string) => {
+return useQuery({queryKey: ["userProfile", id],queryFn: () => fetchUserProfileById(id), 
+    enabled: !!id,  // only run if id is truthy
+});
+};

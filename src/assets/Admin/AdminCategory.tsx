@@ -1,111 +1,127 @@
-import React, { useState } from "react";
-import {
-  Table,
-  Input,
-  Modal,
-  Space,
-  Popconfirm,
-  Button,
-  message,
-  Image,
-} from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import type { TableProps } from "antd";
-
+import React, { useEffect, useState } from "react";
+import { Table, Input, Modal, Space, Popconfirm, Button, message, Image } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import axios from "axios";
+ 
 const { Search } = Input;
-
+ 
 interface DataType {
+  id: string;
   key: string;
   imageUrl: string;
-  category: string;
+  categoryName: string;
   desc: string;
 }
-
+ 
+const baseUrl = "https://localhost:7018/api"; 
+ 
 const AdminCategory: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [categoryInput, setCategoryInput] = useState("");
-  const [category, setCategory] = useState<DataType[]>([]);
   const [descInput, setDescInput] = useState<string>("");
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
-
-  const handleAddCategory = () => {
-    if (categoryInput.trim() === "") {
-      message.warning("Please enter a category");
-      return;
+  const [categories, setCategories] = useState<DataType[]>([]);
+ 
+  // Fetch categories from API
+  const fetchCategoriesData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/Category`);
+      setCategories(response.data);
+    } catch (error) {
+      message.error("Error loading categories");
     }
-    if (imageUrlInput.trim() === "") {
-      message.warning("Please enter a image url");
-      return;
-    }
-
-    if (descInput.trim() === "") {
-      message.warning("Please enter a description");
-      return;
-    }
-
-    const newCategory: DataType = {
-      key: (category.length + 1).toString(),
-      imageUrl: imageUrlInput,
-      category: categoryInput,
-      desc: descInput,
-    };
-    setCategory([...category, newCategory]);
-    setImageUrlInput("");
-    setCategoryInput("");
-    setDescInput("");
-    setIsModalOpen(false);
-    message.success("Category added successfully!");
   };
-
-  const handleDelete = (key: string) => {
-    setCategory(category.filter((category) => category.key !== key));
-    message.success("Category deleted successfully!");
+ 
+  useEffect(() => {
+    fetchCategoriesData();
+  }, []);
+ 
+  // Add Category
+  const handleAddCategory = async () => {
+    if (
+      categoryInput.trim() === "" ||
+      imageUrlInput.trim() === "" ||
+      descInput.trim() === ""
+    ) {
+      message.warning("Please fill all the fields");
+      return;
+    }
+ 
+    try {
+await axios.post(`${baseUrl}/Category`, {
+        categoryName: categoryInput,
+        imageUrl: imageUrlInput,
+        desc: descInput,
+      });
+      message.success("Category added successfully!");
+      setIsModalOpen(false);
+      setCategoryInput("");
+      setImageUrlInput("");
+      setDescInput("");
+      fetchCategoriesData();
+    } catch (error) {
+      message.error("Failed to add category");
+    }
   };
-
+ 
+  // Edit Category
   const handleEdit = (record: DataType) => {
     setEditRecord(record);
-    setEditModalVisible(true);
     setImageUrlInput(record.imageUrl);
-    setCategoryInput(record.category);
+    setCategoryInput(record.categoryName);
     setDescInput(record.desc);
+    setEditModalVisible(true);
   };
-
-  const handleEditOk = () => {
+ 
+  const handleEditOk = async () => {
     if (!editRecord) return;
-    setCategory((prev) =>
-      prev.map((item) =>
-        item.key === editRecord.key
-          ? {
-              ...item,
-              imageUrl: imageUrlInput,
-              category: categoryInput,
-              desc: descInput,
-            }
-          : item
-      )
-    );
-    setEditModalVisible(false);
-    setImageUrlInput("");
-    setCategoryInput("");
-    setDescInput("");
-    message.success("Category updated successfully!");
+ 
+    try {
+      await axios.put(`${baseUrl}/Category/${editRecord.key}`, {
+        categoryName: categoryInput,
+        imageUrl: imageUrlInput,
+        desc: descInput,
+      });
+      message.success("Category updated successfully!");
+      setEditModalVisible(false);
+      setEditRecord(null);
+      setCategoryInput("");
+      setImageUrlInput("");
+      setDescInput("");
+      fetchCategoriesData();
+    } catch (error) {
+      message.error("Failed to update category");
+    }
   };
-
+ 
   const handleEditCancel = () => {
     setEditModalVisible(false);
-    setImageUrlInput("");
+    setEditRecord(null);
     setCategoryInput("");
+    setImageUrlInput("");
     setDescInput("");
   };
-
-  const columns: TableProps<DataType>["columns"] = [
+ 
+  // Delete Category
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`${baseUrl}/Category/${id}`);
+      message.success("Category deleted successfully!");
+      fetchCategoriesData();
+    } catch (error) {
+      message.error("Failed to delete category");
+    }
+  };
+ 
+  // Table columns
+  const columns = [
     {
       title: "Serial No.",
       dataIndex: "key",
       key: "key",
-      render: (text, record, index) => index + 1,
+      render: (text: any, record: any, index: any) => index + 1,
     },
     {
       title: "Image",
@@ -117,8 +133,8 @@ const AdminCategory: React.FC = () => {
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "categoryName",
+      key: "categoryName",
     },
     {
       title: "Description",
@@ -128,22 +144,22 @@ const AdminCategory: React.FC = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record)}>Edit</a>
+          <EditOutlined onClick={() => handleEdit(record)} style={{color: "#13274F"}}/>
           <Popconfirm
             title="Are you sure to delete this category?"
             onConfirm={() => handleDelete(record.key)}
             okText="Yes"
             cancelText="No"
           >
-            <a>Delete</a>
+            <DeleteOutlined style={{color: "red"}}/>
           </Popconfirm>
         </Space>
       ),
     },
   ];
-
+ 
   return (
     <div>
       <div
@@ -167,7 +183,18 @@ const AdminCategory: React.FC = () => {
       >
         <PlusOutlined /> Add Category
       </Button>
-      <Table columns={columns} dataSource={category} />
+ 
+      {/* Category Table */}
+      <Table
+        columns={columns}
+        dataSource={categories.map((category) => ({
+          key: category.id, // MongoDB id as key
+          imageUrl: category.imageUrl,
+          categoryName: category.categoryName,
+          desc: category.desc,
+        }))}
+      />
+ 
       {/* Add Modal */}
       <Modal
         title="Add Category"
@@ -175,14 +202,14 @@ const AdminCategory: React.FC = () => {
         onOk={handleAddCategory}
         onCancel={() => setIsModalOpen(false)}
       >
-        <div style={{ marginTop: 10 }}>Category: </div>
+        <div style={{ marginTop: 10 }}>Category:</div>
         <Input
           placeholder="Enter category"
           value={categoryInput}
           onChange={(e) => setCategoryInput(e.target.value)}
           style={{ marginBottom: "10px" }}
         />
-        <div style={{ marginTop: 10 }}>Description: </div>
+        <div style={{ marginTop: 10 }}>Description:</div>
         <Input.TextArea
           rows={4}
           placeholder="Enter Description"
@@ -190,13 +217,14 @@ const AdminCategory: React.FC = () => {
           style={{ marginTop: "10px" }}
           onChange={(e) => setDescInput(e.target.value)}
         />
-        <div style={{ marginTop: 10 }}>Image Url: </div>
+        <div style={{ marginTop: 10 }}>Image Url:</div>
         <Input
           placeholder="Enter image URL"
           value={imageUrlInput}
           onChange={(e) => setImageUrlInput(e.target.value)}
         />
       </Modal>
+ 
       {/* Edit Modal */}
       <Modal
         title="Edit Category"
@@ -204,14 +232,14 @@ const AdminCategory: React.FC = () => {
         onOk={handleEditOk}
         onCancel={handleEditCancel}
       >
-        <div style={{ marginTop: 10 }}>Category: </div>
+        <div style={{ marginTop: 10 }}>Category:</div>
         <Input
           placeholder="Edit category"
           value={categoryInput}
           onChange={(e) => setCategoryInput(e.target.value)}
           style={{ marginBottom: "10px" }}
         />
-        <div style={{ marginTop: 10 }}>Description: </div>
+        <div style={{ marginTop: 10 }}>Description:</div>
         <Input.TextArea
           rows={4}
           placeholder="Enter Description"
@@ -219,7 +247,7 @@ const AdminCategory: React.FC = () => {
           style={{ marginTop: "10px" }}
           onChange={(e) => setDescInput(e.target.value)}
         />
-        <div style={{ marginTop: 10 }}>Image Url: </div>
+        <div style={{ marginTop: 10 }}>Image Url:</div>
         <Input
           placeholder="Edit image URL"
           value={imageUrlInput}
@@ -229,5 +257,5 @@ const AdminCategory: React.FC = () => {
     </div>
   );
 };
-
+ 
 export default AdminCategory;

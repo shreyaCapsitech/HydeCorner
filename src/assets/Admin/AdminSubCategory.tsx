@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Input,
@@ -11,102 +11,121 @@ import {
   Image,
   theme,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import type { TableProps } from "antd";
+import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  useCategories,
+  fetchSubCategories,
+  addSubCategory,
+  editSubCategory,
+  deleteSubCategory,
+} from "../../HandleApi/Api"; // Import necessary API functions
 
 const { Search } = Input;
 const { Option } = Select;
 
 interface DataType {
   key: string;
+  id: string; // subcategory id
   imageUrl: string;
-  category: string;
-  subCategory: string;
+  categoryId: string;
+  subCategoryName: string;
   desc: string;
 }
 
 const AdminSubCategory: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [imageUrlInput, setImageUrlInput] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    undefined
+  );
   const [subCategoryInput, setSubCategoryInput] = useState<string>("");
   const [descInput, setDescInput] = useState<string>("");
   const [subCategory, setSubCategory] = useState<DataType[]>([]);
   const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
+  const { data: categories, isLoading: categoriesLoading } = useCategories();
 
-  const categoryOptions = ["South Indian", "North Indian"];
+  // Fetch SubCategories on component mount
+  useEffect(() => {
+    fetchSubCategories().then((data) => setSubCategory(data));
+  }, []);
 
   const handleAddSubCategory = () => {
     if (subCategoryInput.trim() === "") {
       message.warning("Please enter a subCategory");
       return;
     }
-
-    if (imageUrlInput.trim() === "") {
-      message.warning("Please enter a Image Url");
+    if (!selectedCategory) {
+      message.warning("Please select a category");
       return;
     }
-
+    if (imageUrlInput.trim() === "") {
+      message.warning("Please enter an Image URL");
+      return;
+    }
     if (descInput.trim() === "") {
       message.warning("Please enter a Description");
       return;
     }
 
-    const newSubCategory: DataType = {
-      key: (subCategory.length + 1).toString(),
+    const newSubCategory = {
       imageUrl: imageUrlInput,
-      category: selectedCategory,
-      subCategory: subCategoryInput,
+      categoryId: selectedCategory, // Using category ID instead of name
+      subCategoryName: subCategoryInput,
       desc: descInput,
     };
 
-    setImageUrlInput("");
-    setSelectedCategory("");
-    setSubCategory([...subCategory, newSubCategory]);
-    setSubCategoryInput("");
-    setDescInput("");
-    setIsModalOpen(false);
-    message.success("Sub Category added successfully!");
+    addSubCategory(newSubCategory).then(() => {
+      fetchSubCategories().then((data) => {
+        setSubCategory(data);
+        setImageUrlInput("");
+        setSelectedCategory(undefined);
+        setSubCategoryInput("");
+        setDescInput("");
+        setIsModalOpen(false);
+        message.success("Sub Category added successfully!");
+      });
+    });
   };
 
-  const handleDelete = (key: string) => {
-    setSubCategory(
-      subCategory.filter((subCategory) => subCategory.key !== key)
-    );
-    message.success("Sub Category deleted successfully!");
+  const handleDelete = (id: string) => {
+    deleteSubCategory(id).then(() => {
+      setSubCategory((prev) => prev.filter((item) => item.id !== id));
+      message.success("Sub Category deleted successfully!");
+    });
   };
 
   const handleEdit = (record: DataType) => {
     setEditRecord(record);
     setEditModalVisible(true);
     setImageUrlInput(record.imageUrl);
-    setSelectedCategory(record.category);
-    setSubCategoryInput(record.subCategory);
+    setSelectedCategory(record.categoryId);
+    setSubCategoryInput(record.subCategoryName);
     setDescInput(record.desc);
   };
 
   const handleEditOk = () => {
     if (!editRecord) return;
-    setSubCategory((prev) =>
-      prev.map((item) =>
-        item.key === editRecord.key
-          ? {
-              ...item,
-              imageUrl: imageUrlInput,
-              category: selectedCategory,
-              subCategory: subCategoryInput,
-              desc: descInput,
-            }
-          : item
-      )
-    );
-    setEditModalVisible(false);
-    setImageUrlInput("");
-    setSelectedCategory("");
-    setSubCategoryInput("");
-    setDescInput("");
-    message.success("Sub Category updated successfully!");
+
+    const updatedSubCategory = {
+      ...editRecord,
+      imageUrl: imageUrlInput,
+      categoryId: selectedCategory!,
+      subCategoryName: subCategoryInput,
+      desc: descInput,
+    };
+
+    editSubCategory(editRecord.id, updatedSubCategory).then(() => {
+      fetchSubCategories().then((data) => {
+        setSubCategory(data);
+        setEditModalVisible(false);
+        setImageUrlInput("");
+        setSelectedCategory(undefined);
+        setSubCategoryInput("");
+        setDescInput("");
+        message.success("Sub Category updated successfully!");
+      });
+    });
   };
 
   const handleCategoryChange = (value: string) => {
@@ -116,7 +135,7 @@ const AdminSubCategory: React.FC = () => {
   const handleEditCancel = () => {
     setEditModalVisible(false);
     setImageUrlInput("");
-    setSelectedCategory("");
+    setSelectedCategory(undefined);
     setSubCategoryInput("");
     setDescInput("");
   };
@@ -129,12 +148,20 @@ const AdminSubCategory: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const columns: TableProps<DataType>["columns"] = [
+  // Map the categoryId to the category name using the categories fetched from the API
+  const getCategoryName = (categoryId: string) => {
+    return (
+      categories?.find((category: any) => category.id === categoryId)
+        ?.categoryName || "Unknown"
+    );
+  };
+
+  const columns = [
     {
       title: "Serial No.",
-      dataIndex: "key",
-      key: "key",
-      render: (text, record, index) => index + 1,
+      dataIndex: "id",
+      key: "id",
+      render: (text: any, record: any, index: number) => index + 1,
     },
     {
       title: "Image",
@@ -146,13 +173,14 @@ const AdminSubCategory: React.FC = () => {
     },
     {
       title: "Category",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "categoryId",
+      key: "categoryId",
+      render: (categoryId: string) => getCategoryName(categoryId),
     },
     {
       title: "Sub-Category",
-      dataIndex: "subCategory",
-      key: "subCategory",
+      dataIndex: "subCategoryName",
+      key: "subCategoryName",
     },
     {
       title: "Description",
@@ -162,16 +190,16 @@ const AdminSubCategory: React.FC = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, record) => (
+      render: (_: any, record: DataType) => (
         <Space size="middle">
-          <a onClick={() => handleEdit(record)}>Edit</a>
+          <EditOutlined onClick={() => handleEdit(record)} style={{color: "#13274F"}}/>
           <Popconfirm
             title="Are you sure to delete this subCategory?"
-            onConfirm={() => handleDelete(record.key)}
+            onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >
-            <a>Delete</a>
+            <DeleteOutlined style={{color: "red"}}/>
           </Popconfirm>
         </Space>
       ),
@@ -201,16 +229,14 @@ const AdminSubCategory: React.FC = () => {
         enterButton="Search"
         size="large"
       />
-
       <Button type="primary" onClick={showModal} style={{ width: "160px" }}>
         <PlusOutlined /> Add Sub-Category
       </Button>
-
       <div>
-        <Table columns={columns} dataSource={subCategory} />
+        <Table columns={columns} dataSource={subCategory} rowKey="id" />
       </div>
 
-      {/* Add Category Modal */}
+      {/* Add Sub-Category Modal */}
       <Modal
         title="Add Sub-Category"
         open={isModalOpen}
@@ -223,10 +249,11 @@ const AdminSubCategory: React.FC = () => {
           style={{ width: "100%", marginTop: "10px" }}
           value={selectedCategory}
           onChange={handleCategoryChange}
+          loading={categoriesLoading}
         >
-          {categoryOptions.map((category) => (
-            <Option key={category} value={category}>
-              {category}
+          {categories?.map((category: any) => (
+            <Option key={category.id} value={category.id}>
+              {category.categoryName}
             </Option>
           ))}
         </Select>
@@ -254,7 +281,7 @@ const AdminSubCategory: React.FC = () => {
         />
       </Modal>
 
-      {/* Edit Category Modal */}
+      {/* Edit Sub-Category Modal */}
       <Modal
         title="Edit Sub-Category"
         open={editModalVisible}
@@ -267,18 +294,19 @@ const AdminSubCategory: React.FC = () => {
           style={{ width: "100%", marginTop: "10px" }}
           value={selectedCategory}
           onChange={handleCategoryChange}
+          loading={categoriesLoading}
         >
-          {categoryOptions.map((category) => (
-            <Option key={category} value={category}>
-              {category}
+          {categories?.map((category: any) => (
+            <Option key={category.id} value={category.id}>
+              {category.categoryName}
             </Option>
           ))}
         </Select>
         <div style={{ marginTop: 10 }}>Sub-Category: </div>
         <Input
-          placeholder="Edit Sub-Category"
-          value={subCategoryInput}
+          placeholder="Enter Sub-Category"
           style={{ marginTop: 10 }}
+          value={subCategoryInput}
           onChange={(e) => setSubCategoryInput(e.target.value)}
         />
         <div style={{ marginTop: 10 }}>Description: </div>
@@ -291,7 +319,7 @@ const AdminSubCategory: React.FC = () => {
         />
         <div style={{ marginTop: "10px" }}>Image URL:</div>
         <Input
-          placeholder="Edit image URL"
+          placeholder="Enter image URL"
           value={imageUrlInput}
           style={{ marginTop: "10px" }}
           onChange={(e) => setImageUrlInput(e.target.value)}
