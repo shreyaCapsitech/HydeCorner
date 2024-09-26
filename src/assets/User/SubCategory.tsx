@@ -45,6 +45,7 @@ const SubCategory: React.FC = () => {
     style={{
       padding: 8,
       minHeight: 720,
+      marginTop: 16,
       background: colorBgContainer,
       borderRadius: borderRadiusLG,
       display: "flex",

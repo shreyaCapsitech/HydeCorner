@@ -2,32 +2,79 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Card, message } from "antd";
-import { useLogin } from "../../HandleApi/Api";
- 
+import { useUserProfile } from "../../HandleApi/Api";
+
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { mutate: loginUser } = useLogin(); // Use mutate for login mutation
+  const [name, setName] = useState<string>("");
+  // const [rememberMe, setRememberMe] = useState(true);
+  const { mutate: loginUser } = useUserProfile(); // Use mutate for login mutation
   const navigate = useNavigate();
- 
+
   const onFinish = () => {
-    const payload = { username, password };
-    loginUser(payload, {
-      onSuccess: (data) => {
-        // Handle successful login (navigate based on role)
-        if (data.role === "Admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
-      },
-      onError: () => {
-        // Handle incorrect credentials
-        message.error("Invalid username or password");
-      },
-    });
-  };
+    const payload = { username, password, name };
+
+    //use
+    // loginUser(payload, {
+    //   onSuccess: (data) => {
+            
+        // console.log("rememberMe: ", rememberMe);
+        // if (rememberMe) {
+
+          //use
+          // localStorage.setItem("token", data.token);
+          // localStorage.setItem("role", data.role);
+          // localStorage.setItem("name", data.name);
+          // localStorage.setItem("username", data.username);
+
+        // } else {
+        //   sessionStorage.setItem("token", data.token);
+        //   sessionStorage.setItem("role", data.role);
+        //   sessionStorage.setItem("name", data.name);
+        //   sessionStorage.setItem("username", data.username);
+        // }
+        // // Save token and role
+        // localStorage.setItem("token", data.token);
+        // localStorage.setItem("role", data.role);
+        // localStorage.setItem("name", data.name)
+
+        //use
+        // Redirect based on role
+  //       if (data.role === "Admin") {
+  //         navigate("/admin");
+  //       } else {
+  //         navigate("/user");
+  //       }
+  //     },
+  //     onError: () => {
+  //       setName("");
+  //       message.error("Invalid username or password");
+  //     },
+  //   });
+  // };
+  
+  loginUser(payload, {
+    onSuccess: (data) => {
+        localStorage.setItem("token", data.Token); // Ensure correct casing if it's "Token" or "token"
+        localStorage.setItem("role", data.Role);
+        localStorage.setItem("name", data.Name);
+        localStorage.setItem("username", data.Username);
  
+        // Redirect based on role
+        if (data.Role === "Admin") {
+            navigate("/admin");
+        } else {
+            navigate("/user");
+        }
+    },
+    onError: () => {
+        setName("");
+        message.error("Invalid username or password");
+    },
+});
+  };
+
   return (
     <div
       style={{
@@ -43,19 +90,43 @@ const Login: React.FC = () => {
         bordered={false}
         style={{ width: 400 }}
       >
-        <Form name="login" initialValues={{ remember: true }} style={{ maxWidth: 400 }} onFinish={onFinish}>
-          <Form.Item name="username" rules={[{ required: true, message: "Please input your Username!" }]}>
-            <Input prefix={<UserOutlined />} placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
+        <Form
+          name="login"
+          initialValues={{ remember: true }}
+          style={{ maxWidth: 400 }}
+          onFinish={onFinish}
+        >
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: "Please input your Username!" }]}
+          >
+            <Input
+              prefix={<UserOutlined />}
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </Form.Item>
-          <Form.Item name="password" rules={[{ required: true, message: "Please input your Password!" }]}>
-            <Input prefix={<LockOutlined />} type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Please input your Password!" }]}
+          >
+            <Input
+              prefix={<LockOutlined />}
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </Form.Item>
           <Form.Item>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox
+                  id="remember"
+                  // onChange={(e) => setRememberMe(e.target.checked)}
+                >
+                  Remember me
+                </Checkbox>
               </Form.Item>
-              <a href="/changePassword">Reset Password</a>
             </div>
           </Form.Item>
           <Form.Item>
@@ -68,5 +139,5 @@ const Login: React.FC = () => {
     </div>
   );
 };
- 
+
 export default Login;

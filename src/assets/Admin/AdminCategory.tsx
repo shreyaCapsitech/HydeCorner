@@ -20,6 +20,7 @@ const AdminCategory: React.FC = () => {
   const [imageUrlInput, setImageUrlInput] = useState("");
   const [categoryInput, setCategoryInput] = useState("");
   const [descInput, setDescInput] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
   const [categories, setCategories] = useState<DataType[]>([]);
@@ -167,6 +168,7 @@ await axios.post(`${baseUrl}/Category`, {
           display: "flex",
           justifyContent: "space-between",
           marginBottom: "20px",
+          marginTop: "24px"
         }}
       >
         <Search
@@ -174,8 +176,11 @@ await axios.post(`${baseUrl}/Category`, {
           allowClear
           enterButton="Search"
           size="large"
+          value={search}
+          onChange={(e) => {setSearch(e.target.value)}}
         />
-      </div>
+      </div>    
+      <div style={{ display:  "flex", justifyContent: "flex-start" }}>
       <Button
         type="primary"
         onClick={() => setIsModalOpen(true)}
@@ -183,7 +188,7 @@ await axios.post(`${baseUrl}/Category`, {
       >
         <PlusOutlined /> Add Category
       </Button>
- 
+      </div>
       {/* Category Table */}
       <Table
         columns={columns}

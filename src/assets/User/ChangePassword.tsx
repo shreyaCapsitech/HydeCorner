@@ -1,97 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LockOutlined } from "@ant-design/icons";
-import type { FormProps } from "antd";
-import { Button, Form, Input, Card } from "antd";
-
-type FieldType = {
-  username?: string;
-  oldpassword?: string;
-  newpassword?: string;
-  confirmpassword?: string;
-  remember?: string;
-};
-
-const ChangePassword: React.FC = () => {
-  const onFinish = (values: any) => {
-    console.log("Received values of form: ", values);
-  };
-  const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
-    errorInfo
-  ) => {
-    console.log("Failed:", errorInfo);
-  };
+import { Button, Form, Input, message } from "antd";
+import axios from "axios";
+ 
+interface ChangePasswordProps {
+  closeModal: () => void; // Add a prop to handle closing the modal
+}
+ 
+const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) => {
+  const [username, setUsername] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+ 
+  // Fetch the logged-in user's name from local storage or session storage
+  useEffect(() => {
+    const storedName = localStorage.getItem("username") || sessionStorage.getItem("username");
+    if (storedName) {
+      setUsername(storedName);
+    }
+  }, []);
+ 
+  const onFinish = async () => {
+    if (newPassword !== confirmPassword) {
+      message.error("Passwords do not match!");
+      return;
+    }
+    const payload = { username, oldPassword, newPassword };
+    try {
+await axios.post("https://localhost:7018/api/UserProfile/change-password", payload);
+      message.success("Password changed successfully!");
+      closeModal(); // Close modal on success
+      const role = localStorage.getItem("role");
+      navigate(`/${role}`);
+    } catch (error) {
+      message.error("Failed to change password. Old password may be incorrect.");
+    }
+  };
+ 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh", // Full viewport height
-        backgroundColor: "#f0f2f5", // Optional background color
-      }}
-    >
-      <Card
-        title={<h2 style={{ fontFamily: "cursive" }}>LOGIN</h2>}
-        bordered={false}
-        style={{ width: 400 }}
-      >
-        <Form
-          name="changePassword"
-          initialValues={{ remember: true }}
-          style={{ maxWidth: 400 }}
-          onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
-          autoComplete="off"
-        >
-          <Form.Item<FieldType>
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="Old Password"
-            name="oldpassword"
-            rules={[{ required: true, message: "Please input your old password!" }]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item<FieldType>
-            label="New Password"
-            name="newpassword"
-            rules={[{ required: true, message: "Please input your new password!" }]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item
-            label="Confirm Password"
-            name="confirmpassword"
-            rules={[{ required: true, message: "Please confirm your Password!" }]}
-          >
-            <Input
-              prefix={<LockOutlined />}
-              type="password"
-              placeholder="Confirm Password"
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button
-              block
-              type="primary"
-              htmlType="submit"
-              onClick={() => {
-                navigate("/");
-              }}
-            >
-              Update Password
-            </Button>
-          </Form.Item>
-        </Form>
-      </Card>
-    </div>
+    <Form name="change-password" onFinish={onFinish} style={{ maxWidth: 400 }}>
+      <Form.Item label="Old Password" style={{marginTop: 20}} rules={[{ required: true, message: "Please input your Old Password!" }]}>
+        <Input.Password onChange={(e) => setOldPassword(e.target.value)} placeholder="Enter Old Password" />
+      </Form.Item>
+      <Form.Item label="New Password" rules={[{ required: true, message: "Please input your New Password!" }]}>
+        <Input.Password value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter New Password" />
+      </Form.Item>
+      <Form.Item label="Confirm Password" rules={[{ required: true, message: "Please confirm your New Password!" }]}>
+        <Input.Password value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" />
+      </Form.Item>
+      <Form.Item>
+        <Button block type="primary" htmlType="submit" >
+          Update Password
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
+ 
 export default ChangePassword;

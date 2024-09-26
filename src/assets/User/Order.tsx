@@ -18,6 +18,7 @@ const Order: React.FC = () => {
               justifyContent: "center",
               gap: "50px",
               minHeight: 720,
+              marginTop: "24px",
               background: colorBgContainer,
               borderRadius: borderRadiusLG,
             }}

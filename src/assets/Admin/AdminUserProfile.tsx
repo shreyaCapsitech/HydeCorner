@@ -28,8 +28,8 @@ interface DataType {
   username: string;
   password: string;
   name: string;
-  gender: string; 
-  age: string; 
+  gender: string;
+  age: string;
 }
 
 const AdminUserProfile: React.FC = () => {
@@ -50,18 +50,25 @@ const AdminUserProfile: React.FC = () => {
   }, []);
 
   const handleAddUserProfile = () => {
-    if (roleInput.trim() === "" || usernameInput.trim() === "" || passwordInput.trim() === "" || nameInput.trim() === "" || genderInput.trim() === ""|| ageInput.trim() === "") {
+    if (
+      roleInput.trim() === "" ||
+      usernameInput.trim() === "" ||
+      passwordInput.trim() === "" ||
+      nameInput.trim() === "" ||
+      genderInput.trim() === "" ||
+      ageInput.trim() === ""
+    ) {
       message.warning("Please enter all fields");
       return;
     }
 
     const newUserProfile = {
-     role: roleInput,
-  username: usernameInput,
-  password: passwordInput,
-  name: nameInput,
-  gender: genderInput,
-  age: ageInput,
+      role: roleInput,
+      username: usernameInput,
+      password: passwordInput,
+      name: nameInput,
+      gender: genderInput,
+      age: ageInput,
     };
 
     addUserProfile(newUserProfile).then(() => {
@@ -74,7 +81,7 @@ const AdminUserProfile: React.FC = () => {
         setGenderInput("");
         setAgeInput("");
         setIsModalOpen(false);
-        message.success("Sub Category added successfully!");
+        message.success("User Profile added successfully!");
       });
     });
   };
@@ -160,39 +167,42 @@ const AdminUserProfile: React.FC = () => {
       dataIndex: "username",
       key: "username",
     },
-    {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
-    },
+    // {
+    //   title: "Password",
+    //   dataIndex: "password",
+    //   key: "password",
+    // },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
     },
     {
-        title: "Gender",
-        dataIndex: "gender",
-        key: "gender",
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
     },
     {
-        title: "Age",
-        dataIndex: "age",
-        key: "age",
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
     },
     {
       title: "Action",
       key: "action",
       render: (_: any, record: DataType) => (
         <Space size="middle">
-          <EditOutlined onClick={() => handleEdit(record)} style={{color: "#13274F"}}/>
+          <EditOutlined
+            onClick={() => handleEdit(record)}
+            style={{ color: "#13274F" }}
+          />
           <Popconfirm
             title="Are you sure to delete this userProfile?"
             onConfirm={() => handleDelete(record.id)}
             okText="Yes"
             cancelText="No"
           >
-            <DeleteOutlined style={{color: "red"}}/>
+            <DeleteOutlined style={{ color: "red" }} />
           </Popconfirm>
         </Space>
       ),
@@ -232,65 +242,67 @@ const AdminUserProfile: React.FC = () => {
       {/* Add User Profile Modal */}
       <Modal
         title="Add User Profile"
-
         open={isModalOpen}
         onOk={handleAddUserProfile}
         onCancel={handleCancel}
       >
         <Form>
-        <Form.Item label="Role">
-          <Radio.Group
-          value={roleInput}
-          style={{ marginTop: "10px" }}
-          onChange={(e) => setRoleInput(e.target.value)}
+          <Form.Item label="Role">
+            <Radio.Group
+              value={roleInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setRoleInput(e.target.value)}
+            >
+              <Radio value="Admin"> Admin </Radio>
+              <Radio value="User"> User </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="Username">
+            <Input
+              placeholder="Enter Username"
+              value={usernameInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setUsernameInput(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Password"
+            required
           >
-            <Radio value="Admin"> Admin </Radio>
-            <Radio value="User"> User </Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Username">
-          <Input 
-           placeholder="Enter Username"
-           value={usernameInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setUsernameInput(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="Password">
-          <Input 
-           placeholder="Enter Password"
-           value={passwordInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setPasswordInput(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="Name">
-          <Input 
-           placeholder="Enter Name"
-           value={nameInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setNameInput(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="Gender">
-          <Radio.Group  
-          value={genderInput}
-          style={{ marginTop: "10px" }}
-          onChange={(e) => setGenderInput(e.target.value)}
->
-            <Radio value="Male"> Male </Radio>
-            <Radio value="Female"> Female </Radio>
-            <Radio value="Others"> Others </Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Age">
-          <Input 
-           placeholder="Enter Age"
-           value={ageInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setAgeInput(e.target.value)}
-          />
-        </Form.Item>
+            <Input
+              placeholder="Enter Password"
+              value={passwordInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setPasswordInput(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Name">
+            <Input
+              placeholder="Enter Name"
+              value={nameInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setNameInput(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Gender">
+            <Radio.Group
+              value={genderInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setGenderInput(e.target.value)}
+            >
+              <Radio value="Male"> Male </Radio>
+              <Radio value="Female"> Female </Radio>
+              <Radio value="Others"> Others </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="Age">
+            <Input
+              placeholder="Enter Age"
+              value={ageInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setAgeInput(e.target.value)}
+            />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -302,59 +314,59 @@ const AdminUserProfile: React.FC = () => {
         onCancel={handleEditCancel}
       >
         <Form>
-        <Form.Item label="Role">
-          <Radio.Group
-          value={roleInput}
-          style={{ marginTop: "10px" }}
-          onChange={(e) => setRoleInput(e.target.value)}
-          >
-            <Radio value="Admin"> Admin </Radio>
-            <Radio value="User"> User </Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Username">
-          <Input 
-           placeholder="Enter Username"
-           value={usernameInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setUsernameInput(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="Password">
+          <Form.Item label="Role">
+            <Radio.Group
+              value={roleInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setRoleInput(e.target.value)}
+            >
+              <Radio value="Admin"> Admin </Radio>
+              <Radio value="User"> User </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="Username">
+            <Input
+              placeholder="Enter Username"
+              value={usernameInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setUsernameInput(e.target.value)}
+            />
+          </Form.Item>
+          {/* <Form.Item label="Password">
           <Input 
            placeholder="Enter Password"
            value={passwordInput}
            style={{ marginTop: "10px" }}
            onChange={(e) => setPasswordInput(e.target.value)}
           />
-        </Form.Item>
-        <Form.Item label="Name">
-          <Input 
-           placeholder="Enter Name"
-           value={nameInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setNameInput(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="Gender">
-          <Radio.Group  
-          value={genderInput}
-          style={{ marginTop: "10px" }}
-          onChange={(e) => setGenderInput(e.target.value)}
->
-            <Radio value="Male"> Male </Radio>
-            <Radio value="Female"> Female </Radio>
-            <Radio value="Others"> Others </Radio>
-          </Radio.Group>
-        </Form.Item>
-        <Form.Item label="Age">
-          <Input 
-           placeholder="Enter Age"
-           value={ageInput}
-           style={{ marginTop: "10px" }}
-           onChange={(e) => setAgeInput(e.target.value)}
-          />
-        </Form.Item>
+        </Form.Item> */}
+          <Form.Item label="Name">
+            <Input
+              placeholder="Enter Name"
+              value={nameInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setNameInput(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="Gender">
+            <Radio.Group
+              value={genderInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setGenderInput(e.target.value)}
+            >
+              <Radio value="Male"> Male </Radio>
+              <Radio value="Female"> Female </Radio>
+              <Radio value="Others"> Others </Radio>
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item label="Age">
+            <Input
+              placeholder="Enter Age"
+              value={ageInput}
+              style={{ marginTop: "10px" }}
+              onChange={(e) => setAgeInput(e.target.value)}
+            />
+          </Form.Item>
         </Form>
       </Modal>
     </div>

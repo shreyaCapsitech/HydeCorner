@@ -280,7 +280,7 @@ const AdminItem: React.FC = () => {
         enterButton="Search"
         size="large"
       />
-      <Button type="primary" onClick={showModal} style={{ width: "160px" }}>
+      <Button type="primary" onClick={showModal} style={{ width: "100px" }}>
         <PlusOutlined /> Add Item
       </Button>
       <div>
