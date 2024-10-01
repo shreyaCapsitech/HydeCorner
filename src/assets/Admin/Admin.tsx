@@ -3,6 +3,8 @@ import { useNavigate, Outlet, Link } from "react-router-dom";
 import { Layout, Menu, theme, Carousel, Avatar, message, Space, Dropdown, Modal } from "antd";
 import type { MenuProps } from 'antd';
 import { LogoutOutlined, UserOutlined, DownOutlined, RetweetOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUserData, Name } from '../../app/slice/userSlice';
 import ChangePassword from "../User/ChangePassword";
  
 const { Header, Footer, Sider, Content } = Layout;
@@ -24,7 +26,9 @@ const Admin: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const { token: { colorBgContainer, borderRadiusLG } } = theme.useToken();
-  const name = localStorage.getItem("name");
+
+  const dispatch = useDispatch();
+  const name = useSelector(Name);
 
   const menuLabels = [
     { key: "category", label: "Category" },
@@ -42,6 +46,7 @@ const Admin: React.FC = () => {
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === "logout") {
+      dispatch(clearUserData());  
       navigate("/");
 message.info("Logged out successfully");
     } else if (key === "change-password") {

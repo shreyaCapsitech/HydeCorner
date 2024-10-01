@@ -2,18 +2,21 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Card, message } from "antd";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../app/slice/userSlice";
 import { useUserProfile } from "../../HandleApi/Api";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState<string>("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [usernameInput, setUsernameInput] = useState("");
   // const [rememberMe, setRememberMe] = useState(true);
   const { mutate: loginUser } = useUserProfile(); // Use mutate for login mutation
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const onFinish = () => {
-    const payload = { username, password, name };
+    const payload = { username:usernameInput , password: passwordInput };
 
     //use
     // loginUser(payload, {
@@ -56,20 +59,28 @@ const Login: React.FC = () => {
   
   loginUser(payload, {
     onSuccess: (data) => {
-        localStorage.setItem("token", data.Token); // Ensure correct casing if it's "Token" or "token"
-        localStorage.setItem("role", data.Role);
-        localStorage.setItem("name", data.Name);
-        localStorage.setItem("username", data.Username);
- 
+        //localStorage.setItem("token", data.token); // Ensure correct casing if it's "Token" or "token"
+        //localStorage.setItem("role", data.role);
+        //localStorage.setItem("name", data.name);
+        //localStorage.setItem("username", data.username);
+ console.log("Role: ",data.role);
+ const userData = {
+  token: data.token,
+  role:  data.role,
+  name: data.name,
+  username: data.username,
+  password: data.password
+ }
+        dispatch(setUserData(userData));
+
         // Redirect based on role
-        if (data.Role === "Admin") {
+        if (data.role === "Admin") {
             navigate("/admin");
         } else {
             navigate("/user");
         }
     },
     onError: () => {
-        setName("");
         message.error("Invalid username or password");
     },
 });
@@ -103,7 +114,7 @@ const Login: React.FC = () => {
             <Input
               prefix={<UserOutlined />}
               placeholder="Username"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setUsernameInput(e.target.value)}
             />
           </Form.Item>
           <Form.Item
@@ -114,7 +125,7 @@ const Login: React.FC = () => {
               prefix={<LockOutlined />}
               type="password"
               placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => setPasswordInput(e.target.value)}
             />
           </Form.Item>
           <Form.Item>

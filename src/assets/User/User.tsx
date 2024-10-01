@@ -4,6 +4,8 @@ import { Layout, Menu, theme, Carousel, message, Space, Dropdown, Avatar, Modal 
 import type { MenuProps } from 'antd';
 import { LogoutOutlined, DownOutlined, UserOutlined, RetweetOutlined } from "@ant-design/icons";
 import ChangePassword from "./ChangePassword";
+import { useSelector } from "react-redux";
+import { Name } from "../../app/slice/userSlice";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -34,7 +36,7 @@ const User: React.FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const name= localStorage.getItem('name');
+  const name= useSelector(Name);
 
   const menuLabels = [
     { key: "category", label: "Category" },
@@ -50,6 +52,7 @@ const User: React.FC = () => {
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === "logout") {
+      localStorage.clear();
       navigate("/");
 message.info("Logged out successfully");
     } else if (key === "change-password") {

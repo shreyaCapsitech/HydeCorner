@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, message } from "antd";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { UserName } from "../../app/slice/userSlice";
  
 interface ChangePasswordProps {
   closeModal: () => void; // Add a prop to handle closing the modal
@@ -12,11 +13,11 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
  
   // Fetch the logged-in user's name from local storage or session storage
+  const storedName = useSelector(UserName);
   useEffect(() => {
-    const storedName = localStorage.getItem("username") || sessionStorage.getItem("username");
     if (storedName) {
       setUsername(storedName);
     }
@@ -29,11 +30,9 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) => {
     }
     const payload = { username, oldPassword, newPassword };
     try {
-await axios.post("https://localhost:7018/api/UserProfile/change-password", payload);
+      await axios.post("https://localhost:7018/api/UserProfile/change-password", payload);
       message.success("Password changed successfully!");
       closeModal(); // Close modal on success
-      const role = localStorage.getItem("role");
-      navigate(`/${role}`);
     } catch (error) {
       message.error("Failed to change password. Old password may be incorrect.");
     }

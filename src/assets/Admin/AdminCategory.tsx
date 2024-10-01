@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Table, Input, Modal, Space, Popconfirm, Button, message, Image } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { Token } from "../../app/slice/userSlice";
  
 const { Search } = Input;
  
@@ -28,7 +30,12 @@ const AdminCategory: React.FC = () => {
   // Fetch categories from API
   const fetchCategoriesData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/Category`);
+      const token = useSelector(Token);
+      const response = await axios.get(`${baseUrl}/Category`, {
+        headers: {
+            Authorization: `Bearer ${token}` // Add token to the request header
+        }
+    });
       setCategories(response.data);
     } catch (error) {
       message.error("Error loading categories");
@@ -38,6 +45,7 @@ const AdminCategory: React.FC = () => {
   useEffect(() => {
     fetchCategoriesData();
   }, []);
+  
  
   // Add Category
   const handleAddCategory = async () => {

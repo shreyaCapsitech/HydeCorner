@@ -2,6 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { message } from "antd";
+import { useSelector } from "react-redux";
+import { Role, Token } from "../app/slice/userSlice";
 
 const baseUrl = "https://localhost:7018/api";
 
@@ -47,7 +49,7 @@ export const UserProfile = async (payload: any) => {
   try {
     const { data } = await axios.post(
       `${baseUrl}/UserProfile/authenticate`,
-      payload
+      payload,
     );
     return data;
   } catch (error) {
@@ -89,14 +91,14 @@ export const useUserProfile = () =>
 // };
 
 const useAuth = () => {
-  const token = localStorage.getItem("token");
+  const token = useSelector(Token);
   return !!token; // returns true if token exists
 };
 
 export const ProtectedRoute = ({ children, role }: any) => {
 
   const isAuthenticated = useAuth();
-  const userRole = localStorage.getItem("role");
+  const userRole = useSelector(Role);
 
   if (!isAuthenticated) {
       return <Navigate to="/" />; // Redirect to login if not authenticated
@@ -124,7 +126,12 @@ axios.interceptors.response.use(
 // Categories api functions
 
 export const fetchCategories = async () => {
-  const response = await axios.get(`${baseUrl}/Category`);
+  const token = useSelector(Token);
+  const response = await axios.get(`${baseUrl}/Category`, {
+    headers: {
+        Authorization: `Bearer ${token}` // Add token to the request header
+    }
+});
   return response.data;
 };
 
@@ -163,7 +170,12 @@ export const useCategory = (id: string) => {
 // Subcategory api functions
 
 export const fetchSubCategories = async () => {
-  const response = await axios.get(`${baseUrl}/SubCategory`);
+  const token = useSelector(Token);
+  const response = await axios.get(`${baseUrl}/SubCategory`, {
+    headers: {
+        Authorization: `Bearer ${token}` // Add token to the request header
+    }
+});
   return response.data;
 };
 
@@ -202,7 +214,12 @@ export const useSubCategory = (id: string) => {
 // Items api functions
 
 export const fetchItems = async () => {
-  const response = await axios.get(`${baseUrl}/Item`);
+  const token = useSelector(Token);
+  const response = await axios.get(`${baseUrl}/Item`, {
+    headers: {
+        Authorization: `Bearer ${token}` // Add token to the request header
+    }
+});
   return response.data;
 };
 
@@ -246,7 +263,7 @@ export const useItem = (id: string) => {
 // };
 
 export const fetchUserProfiles = async () => {
-  const token = localStorage.getItem("token");
+  const token = useSelector(Token);
   const response = await axios.get(`${baseUrl}/UserProfile`, {
       headers: {
           Authorization: `Bearer ${token}` // Add token to the request header
@@ -288,7 +305,12 @@ export const useUserProfiles = () => {
 // Attendee api functions
 
 export const fetchAttendees = async () => {
-  const response = await axios.get(`${baseUrl}/Attendee`);
+  const token = useSelector(Token);
+  const response = await axios.get(`${baseUrl}/Attendee`, {
+    headers: {
+        Authorization: `Bearer ${token}` // Add token to the request header
+    }
+});
   return response.data;
 };
 
@@ -327,7 +349,12 @@ export const useAttendee = (id: string) => {
 // Order api functions
 
 export const fetchOrders = async () => {
-  const response = await axios.get(`${baseUrl}/Order`);
+  const token = useSelector(Token);
+  const response = await axios.get(`${baseUrl}/Order`, {
+    headers: {
+        Authorization: `Bearer ${token}` // Add token to the request header
+    }
+});
   return response.data;
 };
 
