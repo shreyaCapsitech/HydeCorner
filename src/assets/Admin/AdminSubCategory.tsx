@@ -20,6 +20,7 @@ import {
   deleteSubCategory,
 } from "../../HandleApi/Api"; // Import necessary API functions
 
+
 const { Search } = Input;
 const { Option } = Select;
 
@@ -44,7 +45,7 @@ const AdminSubCategory: React.FC = () => {
   const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
   const { data: categories, isLoading: categoriesLoading } = useCategories();
-
+  
   // Fetch SubCategories on component mount
   useEffect(() => {
     fetchSubCategories().then((data) => setSubCategory(data));

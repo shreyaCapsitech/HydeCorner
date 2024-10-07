@@ -51,9 +51,9 @@ const AdminOrder: React.FC = () => {
   const { data: users, isLoading: usersLoading } = useUserProfiles();
 
   // Fetch Orders
-  useEffect(() => {
+ useEffect(() => {
     fetchOrders().then((data) => setOrders(data));
-  }, []);
+ }, []);
 
   // Calculate total price based on selected items and their quantities
   const calculateTotalPrice = () => {

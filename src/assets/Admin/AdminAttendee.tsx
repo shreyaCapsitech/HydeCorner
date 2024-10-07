@@ -39,8 +39,7 @@ const AdminAttendee: React.FC = () => {
   const [attendee, setAttendee] = useState<DataType[]>([]);
   const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
   const [editRecord, setEditRecord] = useState<DataType | null>(null);
-
-  // Fetch UserProfiles on component mount
+ 
   useEffect(() => {
     fetchAttendees().then((data) => setAttendee(data));
   }, []);

@@ -5,7 +5,7 @@ import type { MenuProps } from 'antd';
 import { LogoutOutlined, DownOutlined, UserOutlined, RetweetOutlined } from "@ant-design/icons";
 import ChangePassword from "./ChangePassword";
 import { useSelector } from "react-redux";
-import { Name } from "../../app/slice/userSlice";
+import { clearUserData, Name } from "../../app/slice/userSlice";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -52,7 +52,7 @@ const User: React.FC = () => {
 
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === "logout") {
-      localStorage.clear();
+      clearUserData();
       navigate("/");
 message.info("Logged out successfully");
     } else if (key === "change-password") {

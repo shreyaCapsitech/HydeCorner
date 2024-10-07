@@ -3,9 +3,17 @@ import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { message } from "antd";
 import { useSelector } from "react-redux";
-import { Role, Token } from "../app/slice/userSlice";
+import { clearUserData, Role, Token } from "../app/slice/userSlice";
+import { store } from "../app/store";
 
 const baseUrl = "https://localhost:7018/api";
+
+const getUserToken  = async () => {
+  const currentState = store.getState();
+  const token = currentState?.user?.token;
+  return token;
+}
+
 
 // //Fetch logins
 // const fetchLogins = async () => {
@@ -116,7 +124,7 @@ axios.interceptors.response.use(
   error => {
       if (error.response.status === 401) {
           // Redirect to login on 401
-          localStorage.clear();
+          clearUserData();
           window.location.href = '/';
       }
       return Promise.reject(error);
@@ -126,7 +134,7 @@ axios.interceptors.response.use(
 // Categories api functions
 
 export const fetchCategories = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/Category`, {
     headers: {
         Authorization: `Bearer ${token}` // Add token to the request header
@@ -170,7 +178,7 @@ export const useCategory = (id: string) => {
 // Subcategory api functions
 
 export const fetchSubCategories = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/SubCategory`, {
     headers: {
         Authorization: `Bearer ${token}` // Add token to the request header
@@ -214,7 +222,7 @@ export const useSubCategory = (id: string) => {
 // Items api functions
 
 export const fetchItems = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/Item`, {
     headers: {
         Authorization: `Bearer ${token}` // Add token to the request header
@@ -263,7 +271,7 @@ export const useItem = (id: string) => {
 // };
 
 export const fetchUserProfiles = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/UserProfile`, {
       headers: {
           Authorization: `Bearer ${token}` // Add token to the request header
@@ -305,7 +313,7 @@ export const useUserProfiles = () => {
 // Attendee api functions
 
 export const fetchAttendees = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/Attendee`, {
     headers: {
         Authorization: `Bearer ${token}` // Add token to the request header
@@ -349,7 +357,7 @@ export const useAttendee = (id: string) => {
 // Order api functions
 
 export const fetchOrders = async () => {
-  const token = useSelector(Token);
+  const token = await getUserToken();
   const response = await axios.get(`${baseUrl}/Order`, {
     headers: {
         Authorization: `Bearer ${token}` // Add token to the request header
@@ -363,8 +371,11 @@ export const fetchOrderById = async (id: string) => {
   return response.data;
 };
 
-export const addOrder = async (item: any) => {
-  const response = await axios.post(`${baseUrl}/Order`, item);
+export const addOrder = async (order: any) => {
+  const token = await getUserToken();
+const response = await axios.post(`${baseUrl}/Order`, order, {
+      headers: { Authorization: `Bearer ${token}` }
+  });
   return response.data;
 };
 

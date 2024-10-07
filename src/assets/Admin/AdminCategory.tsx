@@ -28,9 +28,9 @@ const AdminCategory: React.FC = () => {
   const [categories, setCategories] = useState<DataType[]>([]);
  
   // Fetch categories from API
-  const fetchCategoriesData = async () => {
-    try {
-      const token = useSelector(Token);
+  const token = useSelector(Token);
+  const fetchCategoriesData = async (token: any) => {
+    try { 
       const response = await axios.get(`${baseUrl}/Category`, {
         headers: {
             Authorization: `Bearer ${token}` // Add token to the request header
@@ -43,7 +43,7 @@ const AdminCategory: React.FC = () => {
   };
  
   useEffect(() => {
-    fetchCategoriesData();
+    fetchCategoriesData(token);
   }, []);
   
  
@@ -69,7 +69,7 @@ await axios.post(`${baseUrl}/Category`, {
       setCategoryInput("");
       setImageUrlInput("");
       setDescInput("");
-      fetchCategoriesData();
+      fetchCategoriesData(token);
     } catch (error) {
       message.error("Failed to add category");
     }
@@ -99,7 +99,7 @@ await axios.post(`${baseUrl}/Category`, {
       setCategoryInput("");
       setImageUrlInput("");
       setDescInput("");
-      fetchCategoriesData();
+      fetchCategoriesData(token);
     } catch (error) {
       message.error("Failed to update category");
     }
@@ -118,7 +118,7 @@ await axios.post(`${baseUrl}/Category`, {
     try {
       await axios.delete(`${baseUrl}/Category/${id}`);
       message.success("Category deleted successfully!");
-      fetchCategoriesData();
+      fetchCategoriesData(token);
     } catch (error) {
       message.error("Failed to delete category");
     }
@@ -130,7 +130,7 @@ await axios.post(`${baseUrl}/Category`, {
       title: "Serial No.",
       dataIndex: "key",
       key: "key",
-      render: (text: any, record: any, index: any) => index + 1,
+      render: (text: string, record: any, index: number) => index + 1,
     },
     {
       title: "Image",
